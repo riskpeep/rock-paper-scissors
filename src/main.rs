@@ -5,6 +5,7 @@
 
 use std::fmt;
 use std::io;
+use std::str;
 use rand::Rng;
 use rand::distributions::{Distribution, Standard};
 
@@ -12,6 +13,23 @@ enum RockPaperScissorsGuess {
     Rock,
     Paper,
     Scissors,
+}
+
+#[derive(Debug)]
+enum ParseRockPaperScissorsGuessError {
+    Unknown(String),
+}
+
+impl str::FromStr for RockPaperScissorsGuess {
+    type Err = ParseRockPaperScissorsGuessError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "r" | "rock"    => Ok(RockPaperScissorsGuess::Rock),
+            "p" | "paper"   => Ok(RockPaperScissorsGuess::Paper),
+            "s" | "scissors" => Ok(RockPaperScissorsGuess::Scissors),
+            _   => Err(ParseRockPaperScissorsGuessError::Unknown(s.to_string())),
+        }
+    }
 }
 
 impl fmt::Display for RockPaperScissorsGuess {
@@ -41,7 +59,7 @@ fn main() {
 
     let comp_move: RockPaperScissorsGuess = rand::thread_rng().gen();
 
-    println!("Please select (r)ock, (p)aper, or (s)issors:");
+    println!("Please select (r)ock, (p)aper, or (s)cissors:");
 
     let mut player_move = String::new();
 
@@ -49,6 +67,9 @@ fn main() {
         .read_line(&mut player_move)
         .expect("Failed to read move");
 
-    println!("You guessed: {player_move}");
+    let player_move: RockPaperScissorsGuess =
+        player_move.trim().parse().expect("This is not a valid guess.");
+
+    println!("You chose {player_move}");
     println!("I chose {comp_move}");
 }
