@@ -15,6 +15,81 @@ enum RockPaperScissorsGuess {
     Scissors,
 }
 
+enum RockPaperScissorsCompare {
+    RockCrushesScissors,
+    PaperCoversRock,
+    ScissorsCutPaper,
+}
+
+enum RockPaperScissorsResult {
+    Win(RockPaperScissorsCompare),
+    Loss(RockPaperScissorsCompare),
+    Tie(String),
+}
+
+pub trait Compare<T, U> {
+    fn compare(&self, b: &T) -> U;
+}
+
+impl Compare<RockPaperScissorsGuess, RockPaperScissorsResult> for RockPaperScissorsGuess{
+    fn compare(&self, b: &RockPaperScissorsGuess) -> RockPaperScissorsResult {
+        match self {
+            RockPaperScissorsGuess::Rock => {
+                match b {
+                    RockPaperScissorsGuess::Rock    =>
+                        RockPaperScissorsResult::Tie(self.to_string()),
+                    RockPaperScissorsGuess::Paper   =>
+                        RockPaperScissorsResult::Loss(RockPaperScissorsCompare::PaperCoversRock),
+                    RockPaperScissorsGuess::Scissors =>
+                        RockPaperScissorsResult::Win(RockPaperScissorsCompare::RockCrushesScissors),
+                }
+            }
+            RockPaperScissorsGuess::Paper => {
+                match b {
+                    RockPaperScissorsGuess::Rock    =>
+                        RockPaperScissorsResult::Win(RockPaperScissorsCompare::PaperCoversRock),
+                    RockPaperScissorsGuess::Paper   =>
+                        RockPaperScissorsResult::Tie(self.to_string()),
+                    RockPaperScissorsGuess::Scissors =>
+                        RockPaperScissorsResult::Loss(RockPaperScissorsCompare::ScissorsCutPaper),
+                }
+            }
+            RockPaperScissorsGuess::Scissors => {
+                match b {
+                    RockPaperScissorsGuess::Rock    =>
+                        RockPaperScissorsResult::Loss(RockPaperScissorsCompare::RockCrushesScissors),
+                    RockPaperScissorsGuess::Paper   =>
+                        RockPaperScissorsResult::Win(RockPaperScissorsCompare::ScissorsCutPaper),
+                    RockPaperScissorsGuess::Scissors =>
+                        RockPaperScissorsResult::Tie(self.to_string()),
+                }
+            }
+        }
+    }
+}
+
+impl fmt::Display for RockPaperScissorsResult {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            RockPaperScissorsResult::Win(result) => {
+                match result {
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
+                }
+            },
+            RockPaperScissorsResult::Loss(result) => {
+                match result {
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
+                }
+            },
+            RockPaperScissorsResult::Tie(result) => write!(f, "Tie...{result}"),
+        }
+    }
+}
+
 #[derive(Debug)]
 enum ParseRockPaperScissorsGuessError {
     Unknown(String),
@@ -72,4 +147,8 @@ fn main() {
 
     println!("You chose {player_move}");
     println!("I chose {comp_move}");
+
+    let result: RockPaperScissorsResult = player_move.compare(&comp_move);
+
+    println!("{}", result);
 }
