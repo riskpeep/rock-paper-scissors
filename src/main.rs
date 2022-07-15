@@ -73,19 +73,19 @@ impl fmt::Display for RockPaperScissorsResult {
         match self {
             RockPaperScissorsResult::Win(result) => {
                 match result {
-                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
-                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
-                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "You Won!...Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "You Won!...Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "You Won!...Scissors cut paper"),
                 }
             },
             RockPaperScissorsResult::Loss(result) => {
                 match result {
-                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
-                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
-                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "You Lost!...Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "You Lost!...Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "You Lost!...Scissors cut paper"),
                 }
             },
-            RockPaperScissorsResult::Tie(result) => write!(f, "Tie...{result}"),
+            RockPaperScissorsResult::Tie(result) => write!(f, "We Tied...{result}"),
         }
     }
 }
