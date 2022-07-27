@@ -73,19 +73,19 @@ impl fmt::Display for RockPaperScissorsResult {
         match self {
             RockPaperScissorsResult::Win(result) => {
                 match result {
-                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "You Won!...Rock crushes scissors"),
-                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "You Won!...Paper covers rock"),
-                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "You Won!...Scissors cut paper"),
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
                 }
             },
             RockPaperScissorsResult::Loss(result) => {
                 match result {
-                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "You Lost!...Rock crushes scissors"),
-                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "You Lost!...Paper covers rock"),
-                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "You Lost!...Scissors cut paper"),
+                    RockPaperScissorsCompare::RockCrushesScissors => write!(f, "Rock crushes scissors"),
+                    RockPaperScissorsCompare::PaperCoversRock => write!(f, "Paper covers rock"),
+                    RockPaperScissorsCompare::ScissorsCutPaper => write!(f, "Scissors cut paper"),
                 }
             },
-            RockPaperScissorsResult::Tie(result) => write!(f, "We Tied...{result}"),
+            RockPaperScissorsResult::Tie(result) => write!(f, "{result}"),
         }
     }
 }
@@ -130,37 +130,88 @@ impl Distribution<RockPaperScissorsGuess> for Standard {
 }
 
 fn main() {
+    //
+    // Game Intro
+    //
     println!("Hello, Lets play Rock, Paper, Scissors!");
 
-    let comp_move: RockPaperScissorsGuess = rand::thread_rng().gen();
+    println!("Let's play best 3 out of 5 rounds.");
 
-    println!("Please select (r)ock, (p)aper, or (s)cissors:");
+    let mut player_wins = 0;
+    let mut comp_wins = 0;
 
-    loop {
-        let mut player_move = String::new();
+    loop { // game
 
-        io::stdin()
-            .read_line(&mut player_move)
-            .expect("Failed to read move");
+        //
+        // 'game' loop
+        //
 
-        let player_move: Result<RockPaperScissorsGuess, ParseRockPaperScissorsGuessError>
-            = player_move.trim().parse();
+        let comp_move: RockPaperScissorsGuess = rand::thread_rng().gen();
 
-        let player_move = match player_move {
-            Ok(player_move_val) => {
-                println!("");
-                println!("You chose {}", player_move_val);
-                println!("I chose {}", comp_move);
-                player_move_val
-            },
-            Err(ParseRockPaperScissorsGuessError::Unknown(s)) => {
-                println!("\"{}\" is not a valid guess, try again.\n",s);
-                continue
-            },
-        };
+        println!("Please select (r)ock, (p)aper, or (s)cissors:");
 
-        let result: RockPaperScissorsResult = player_move.compare(&comp_move);
-        println!("{}", result);
-        break;
+        loop { // round
+
+            //
+            // 'round' loop
+            //
+
+            let mut player_move = String::new();
+
+            io::stdin()
+                .read_line(&mut player_move)
+                .expect("Failed to read move");
+
+            let player_move: Result<RockPaperScissorsGuess, ParseRockPaperScissorsGuessError>
+                = player_move.trim().parse();
+
+            let player_move = match player_move {
+                Ok(player_move_val) => {
+                    println!("");
+                    println!("You chose {}", player_move_val);
+                    println!("I chose {}", comp_move);
+                    player_move_val
+                },
+                Err(ParseRockPaperScissorsGuessError::Unknown(s)) => {
+                    println!("\"{}\" is not a valid guess, try again.\n",s);
+                    continue
+                },
+            };
+
+            //
+            // Report Round Results
+            //
+
+            let result: RockPaperScissorsResult = player_move.compare(&comp_move);
+            match result {
+                RockPaperScissorsResult::Win(_) => {
+                    player_wins += 1;
+                    println!("{}", result);
+                    println!("You won this round.");
+                },
+                RockPaperScissorsResult::Tie(_) => println!("Tie..."),
+                RockPaperScissorsResult::Loss(_) => {
+                    comp_wins += 1;
+                    println!("{}", result);
+                    println!("You lost this round.");
+                },
+            }
+
+            break;
+        }
+
+        //
+        // Win Check
+        //
+        println!("");
+        if player_wins == 3 {
+            println!("Congratulations, You won the game!\n");
+            break;
+        } else if comp_wins == 3 {
+            println!("Too bad...You lost the game! Better luck next time.\n");
+            break;
+        } else {
+            println!("You have {} wins, and I have {} wins.\n", player_wins, comp_wins);
+        }
     }
 }
