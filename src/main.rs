@@ -139,8 +139,9 @@ fn main() {
 
     let mut player_wins = 0;
     let mut comp_wins = 0;
+    let mut quit = false;
 
-    loop { // game
+    'game: loop { // game
 
         //
         // 'game' loop
@@ -173,8 +174,17 @@ fn main() {
                     player_move_val
                 },
                 Err(ParseRockPaperScissorsGuessError::Unknown(s)) => {
-                    println!("\"{}\" is not a valid guess, try again.\n",s);
-                    continue
+                    match &s[..] {
+                        "q" | "quit" => {
+                            println!("Quit? Okay.");
+                            quit = true;
+                            break 'game;
+                        },
+                        _            => {
+                            println!("\"{}\" is not a valid guess, try again.\n",s); // TODO Figure out how to name the character here.
+                            continue
+                        },
+                    }
                 },
             };
 
@@ -213,5 +223,9 @@ fn main() {
         } else {
             println!("You have {} wins, and I have {} wins.\n", player_wins, comp_wins);
         }
+    }
+
+    if quit == true {
+        println!("Well... thanks for playing.  Sorry you had to leave so soon.");
     }
 }
