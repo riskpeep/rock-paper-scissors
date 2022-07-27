@@ -136,19 +136,31 @@ fn main() {
 
     println!("Please select (r)ock, (p)aper, or (s)cissors:");
 
-    let mut player_move = String::new();
+    loop {
+        let mut player_move = String::new();
 
-    io::stdin()
-        .read_line(&mut player_move)
-        .expect("Failed to read move");
+        io::stdin()
+            .read_line(&mut player_move)
+            .expect("Failed to read move");
 
-    let player_move: RockPaperScissorsGuess =
-        player_move.trim().parse().expect("This is not a valid guess.");
+        let player_move: Result<RockPaperScissorsGuess, ParseRockPaperScissorsGuessError>
+            = player_move.trim().parse();
 
-    println!("You chose {player_move}");
-    println!("I chose {comp_move}");
+        let player_move = match player_move {
+            Ok(player_move_val) => {
+                println!("");
+                println!("You chose {}", player_move_val);
+                println!("I chose {}", comp_move);
+                player_move_val
+            },
+            Err(ParseRockPaperScissorsGuessError::Unknown(s)) => {
+                println!("\"{}\" is not a valid guess, try again.\n",s);
+                continue
+            },
+        };
 
-    let result: RockPaperScissorsResult = player_move.compare(&comp_move);
-
-    println!("{}", result);
+        let result: RockPaperScissorsResult = player_move.compare(&comp_move);
+        println!("{}", result);
+        break;
+    }
 }
